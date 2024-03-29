@@ -12,5 +12,8 @@
     "express": "^4.19.2",
     "nodemon": "^3.1.0",
     "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "electron": "^29.1.6"
   }
 }

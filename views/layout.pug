@@ -1,1 +1,20 @@
-h1 #{name}'s Pug source code!
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Document
+    body 
+        h1 Select Application
+        input(type="file" id="fileInput" style="display: none;" accept=".exe")
+        button(onclick="myFunction()") Select Application
+
+    script.
+        function myFunction() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.click();
+            fileInput.addEventListener('change', function(event) {
+                const selectedFile = event.target.files[0];
+                console.log('Selected Application: ', selectedFile);
+            });
+        }
