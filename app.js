@@ -26,6 +26,7 @@ const compiledFunc = pug.compileFile('./views/layout.pug');
 
 // Path support
 const path = require('path');
+const { URLSearchParams } = require('url');
 
 // JSON Support
 app.use(express.json());
@@ -43,49 +44,66 @@ app.use(session({
 const clientSecret = env.parsed.CLIENT_SECRET;
 const clientID = env.parsed.CLIENT_ID;
 const redirectURI = env.parsed.REDIRECT_URI;
+const discordJS = require('discord.js');
 
 console.log(redirectURI)
 
 app.get('/DiscordAuth', (req, res) => {
-    const scopes = 'identify';
+    const scopes = 'identify rpc';
     const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${encodeURIComponent(scopes)}`;
     res.redirect(discordOAuthUrl);
 });
 
 app.get('/ChangeDiscordStatus', async (req, res) => {
-    console.log(req.query);
     const { code } = req.query;
     if(!code) {
         return res.status(400).send('Authorization code not provided');
     }
 
     try {
-        const response = await axios.post('https://discord.com/api/oauth2/token', {
+        
+        const response = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
             client_id: clientID,
             client_secret: clientSecret,
             grant_type: 'authorization_code',
-            code,
+            code: code,
             redirect_uri: redirectURI,
-            scope: 'identify'
+            scope: 'identify rpc'
+        }), {
+            headers: {
+                'Content-Type' : 'application/x-www-form-urlencoded',
+                Authorization: `Basic ${Buffer.from(`${clientID}:${clientSecret}`).toString('base64')}`,
+            }
         });
+        
         const { access_token } = response.data;
-
         req.session.access_token = access_token;
+        console.log(req.session.access_token);
 
-        // USE ACCESS TOKEN HERE TO CHANGE STATUS
-        //CHANGE STATUS TO ONLINE
-        // await axios.patch('https://discord.com/api/v9/users/@me/settings', {
-        //     status: 'online'
-        // }, {
-        //     headers: {
-        //         Authorization: `Bearer ${access_token}`
-        //     }
-        // });
+        // // USE ACCESS TOKEN HERE TO CHANGE STATUS
+        // //CHANGE STATUS TO ONLINE
+       
+        const authorizationHeader = {
+            headers: {
+              Authorization: `Bearer ${req.session.access_token}`
+            }
+          };
 
-        res.redirect('/success');
+        axios.patch('https://discord.com/api/v9/users/@me/settings', {
+            status: 'online'
+            }, authorizationHeader)
+            .then(response => {
+                console.log('User settings updated:', response.data);
+                res.redirect('/success');
+            })
+            .catch(error => {
+                console.error('Error updating user settings:', error.stack);
+                res.redirect('/');
+        });
+        
     }
     catch (err) {
-        console.error('Error exchanging authorization code for access token: ', err);
+        console.error('Error exchanging authorization code for access token', err);
         res.status(500).send('Error exchanging authorization code for access token');
     }
 });
