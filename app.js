@@ -33,6 +33,7 @@ app.use(express.json());
 
 //session support
 app.use(session({
+    // CHANGE THIS TO A SECRET KEY
     secret: 'your_session_secret',
     resave: false,
     saveUninitialized: true
@@ -89,12 +90,13 @@ app.get('/ChangeDiscordStatus', async (req, res) => {
 
         axios.get('https://discord.com/api/v9/users/@me', authorizationHeader)
             .then(response => {
-                console.log('User connections:', response.data);
-                res.redirect('/success');
+                //add response data to user session 
+                req.session.userData = response.data;
+                res.redirect('/user-information', );
             })
             .catch(error => {
                 console.error('Error updating user settings:', error.stack);
-                res.redirect('/');
+                res.redirect('/user-information');
         });
         
     }
@@ -104,13 +106,13 @@ app.get('/ChangeDiscordStatus', async (req, res) => {
     }
 });
 
-app.get('/success', (req,res) => {
+app.get('/user-information', (req,res) => {
     const { access_token } = req.session;
     if(!access_token){
         return res.status(400).send('Access toekn not found in session');
     }
 
-    res.send('Authorization successful! You can close this window.');
+    res.send(JSON.stringify(req.session));
 })
 
 
