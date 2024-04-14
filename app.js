@@ -5,6 +5,7 @@ const axios = require('axios');
 const session = require('express-session');
 const fs = require('fs');
 const https = require('https');
+const devDebug = require ('./public/js/dev-debug.js');
 
 // EXPRESS SETUP
 const express = require('express');
@@ -17,6 +18,7 @@ const options = {
 const server = https.createServer(options, app);
 const port = 3000;
 
+//can use this to listen for events on the router
 server.listen(port, () => {
     console.log(`Server running on https://localhost:${port}`);
 })
@@ -31,6 +33,9 @@ const { URLSearchParams } = require('url');
 
 // JSON Support
 app.use(express.json());
+
+// Expose Public file
+app.use(express.static('public'));
 
 //session support
 app.use(session({
@@ -58,8 +63,6 @@ app.get('/DiscordAuth', (req, res) => {
 app.get('/ChangeDiscordStatus', async (req, res) => {
 
     const { code } = req.query;
-    console.log(`This is the req.query:\n${JSON.stringify(req.query)}`)
-    console.log(`This is teh value of the 'code' variable ${code}`)
     if(!code) {
         return res.status(400).send('Authorization code not provided');
     }
@@ -123,8 +126,3 @@ app.get('/', (req, res) => {
         path: 'Devin'
     }));
 });
-
-// broadcast message on router
-// app.listen(port, () => {
-//     console.log(`example app listening on port ${port}`);
-// });
