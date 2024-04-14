@@ -1,4 +1,5 @@
 
+// REQUIRES
 const env = require('dotenv').config({ path:"./.ENV" });
 const axios = require('axios');
 const session = require('express-session');
@@ -9,8 +10,8 @@ const https = require('https');
 const express = require('express');
 const app = express();
 const options = {
-    key: fs.readFileSync('./key.pem'),
-    cert: fs.readFileSync('./cert.pem'),
+    key: fs.readFileSync(env.parsed.KEY_PATH),
+    cert: fs.readFileSync(env.parsed.CERT_PATH),
     passphrase: env.parsed.PASSPHRASE
 };
 const server = https.createServer(options, app);
