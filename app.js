@@ -44,18 +44,20 @@ app.use(session({
 const clientSecret = env.parsed.CLIENT_SECRET;
 const clientID = env.parsed.CLIENT_ID;
 const redirectURI = env.parsed.REDIRECT_URI;
-const discordJS = require('discord.js');
 
 console.log(redirectURI)
 
 app.get('/DiscordAuth', (req, res) => {
-    const scopes = 'identify rpc';
+    const scopes = 'identify';
     const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${encodeURIComponent(scopes)}`;
     res.redirect(discordOAuthUrl);
 });
 
 app.get('/ChangeDiscordStatus', async (req, res) => {
+
     const { code } = req.query;
+    console.log(`This is the req.query:\n${JSON.stringify(req.query)}`)
+    console.log(`This is teh value of the 'code' variable ${code}`)
     if(!code) {
         return res.status(400).send('Authorization code not provided');
     }
@@ -71,29 +73,23 @@ app.get('/ChangeDiscordStatus', async (req, res) => {
             scope: 'identify rpc'
         }), {
             headers: {
-                'Content-Type' : 'application/x-www-form-urlencoded',
+                //'Content-Type' : 'application/x-www-form-urlencoded',
                 Authorization: `Basic ${Buffer.from(`${clientID}:${clientSecret}`).toString('base64')}`,
             }
         });
-        
         const { access_token } = response.data;
-        req.session.access_token = access_token;
-        console.log(req.session.access_token);
-
-        // // USE ACCESS TOKEN HERE TO CHANGE STATUS
-        // //CHANGE STATUS TO ONLINE
+        req.session.access_token = access_token.trim();
        
         const authorizationHeader = {
             headers: {
-              Authorization: `Bearer ${req.session.access_token}`
+              Authorization: `Bearer ${req.session.access_token}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
             }
           };
 
-        axios.patch('https://discord.com/api/v9/users/@me/settings', {
-            status: 'online'
-            }, authorizationHeader)
+        axios.get('https://discord.com/api/v9/users/@me', authorizationHeader)
             .then(response => {
-                console.log('User settings updated:', response.data);
+                console.log('User connections:', response.data);
                 res.redirect('/success');
             })
             .catch(error => {
