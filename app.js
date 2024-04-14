@@ -1,4 +1,3 @@
-
 // REQUIRES
 const env = require('dotenv').config({ path:"./.ENV" });
 const axios = require('axios');
@@ -6,6 +5,10 @@ const session = require('express-session');
 const fs = require('fs');
 const https = require('https');
 const devDebug = require ('./public/js/dev-debug.js');
+// Path support
+const path = require('path');
+const { URLSearchParams } = require('url');
+
 
 // EXPRESS SETUP
 const express = require('express');
@@ -18,6 +21,9 @@ const options = {
 const server = https.createServer(options, app);
 const port = 3000;
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 //can use this to listen for events on the router
 server.listen(port, () => {
     console.log(`Server running on https://localhost:${port}`);
@@ -27,9 +33,6 @@ server.listen(port, () => {
 const pug = require('pug');
 const compiledFunc = pug.compileFile('./views/layout.pug');
 
-// Path support
-const path = require('path');
-const { URLSearchParams } = require('url');
 
 // JSON Support
 app.use(express.json());
@@ -112,11 +115,12 @@ app.get('/ChangeDiscordStatus', async (req, res) => {
 
 app.get('/user-information', (req,res) => {
     const { access_token } = req.session;
+    const reqData = req.session;
     if(!access_token){
-        return res.status(400).send('Access toekn not found in session');
+        return res.status(400).send('Access token not found in session');
     }
-
-    res.send(JSON.stringify(req.session));
+    res.render('discord-details', {reqData});
+    // res.send((req.session));
 })
 
 
