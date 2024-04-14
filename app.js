@@ -11,7 +11,7 @@ const app = express();
 const options = {
     key: fs.readFileSync('./key.pem'),
     cert: fs.readFileSync('./cert.pem'),
-    passphrase: 'x1t6w3f8u!!!'
+    passphrase: env.parsed.PASSPHRASE
 };
 const server = https.createServer(options, app);
 const port = 3000;
