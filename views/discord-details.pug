@@ -2,12 +2,21 @@ html(lang="en")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(rel="preconnect" href="https://fonts.googleapis.com")
+        link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+        link(href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet")
         link(rel="stylesheet", href="./stylesheets/style-reset.css")
+        link(rel="stylesheet", href="./stylesheets/layout.css")
         link(rel="stylesheet", href="./stylesheets/style.css")
         script(src="./js/pug-home.js")
-        title Devin DeLeon
+        title Discord Details
     body
-        div#discordDetails
-            h1 #{reqData.userData.global_name}'s Details
-            p#discordGlobal Gloabl Name: #{reqData.userData.global_name}
-            p#discordUser Username: #{reqData.userData.username}
+        div#discordDetails.grid-1-col
+            div.card.open-sans-discord
+                h1 Discord Details
+                div#detailsContainerCol.grid-2-col
+                    div#detailsContainerRow.grid-2-row
+                        p#discordGlobal Gloabl Name: #{reqData.userData.global_name}
+                        p#discordUser Username: #{reqData.userData.username}
+                    img(src="./images/discord/discord-mark-white.png" class="icon-med")
+            

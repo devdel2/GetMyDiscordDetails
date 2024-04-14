@@ -121,8 +121,7 @@ app.get('/user-information', (req,res) => {
     }
     res.render('discord-details', {reqData});
     // res.send((req.session));
-})
-
+});
 
 // Default test get route
 app.get('/', (req, res) => {
