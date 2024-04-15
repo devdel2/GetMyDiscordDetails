@@ -1,18 +1,29 @@
- // REQUIRE STMNTS
+ // #region REQUIRE STMNTS
+
 const env = require('dotenv').config(({ path:"./.ENV"})).parsed;
 const axios = require('axios');
 const discordRouter = require('express').Router();
 
-// CLIENT SETUP
+// #endregion
+
+// #region CLIENT SETUP
+
 const clientSecret = env.CLIENT_SECRET;
 const clientID = env.CLIENT_ID;
 const redirectURI = env.REDIRECT_URI;
 
-// Discord Routes
+// #endregion
+
+// #region DISCORD ENV
+
 const discordAuthorize = env.DISCORD_AUTH_ROUTE
 const discordRedirect  = env.DISCORD_REDIRECT_ROUTE
 const discordUserInfo = env.DISCORD_USER_ROUTE
 const discordOAuthToken = env.DISCORD_OAUTH_TOKEN
+
+//#endregion
+
+// #region SCOPE/AUTH SETUP
 
 // Scopes sent to discord Auth server to determine access level
 const scopes = {
@@ -20,13 +31,16 @@ const scopes = {
 };
 const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${encodeURIComponent(scopes.identify)}`
 
-// Discord Authroization
+//#endregion
+
+// #region DISCORD ROUTES
+
+// #Discord Authorization
 discordRouter.get(discordAuthorize, (req, res) => {
     res.redirect(discordOAuthUrl);
 });
 
 // Discord Auth-Token Exchange
-// *** NEED TO CHANGE THIS ROUTE TO MAKE SENSE
 discordRouter.get(discordRedirect, async (req,res) => {
     //gather the auth code from OAuth
     const { code } = req.query;
@@ -95,5 +109,7 @@ discordRouter.get('/UserInformation', (req,res) => {
         console.error(`The error occured at: ${err.stack}`)
     }
 });
+
+// #endregion
 
 module.exports = { discordRouter }
