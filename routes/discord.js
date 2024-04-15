@@ -28,8 +28,9 @@ const discordOAuthToken = env.DISCORD_OAUTH_TOKEN
 // Scopes sent to discord Auth server to determine access level
 const scopes = {
     identify: "identify",
+    connections: "connections"
 };
-const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${encodeURIComponent(scopes.identify)}`
+const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${encodeURIComponent(`${scopes.identify} ${scopes.connections}`)}`
 
 //#endregion
 
@@ -52,18 +53,19 @@ discordRouter.get(discordRedirect, async (req,res) => {
 
     // try to exchange auth code for access token
     try {
-        const discordResponse = await axios.post(discordOAuthToken, new URLSearchParams ({
-            client_id: clientID,
-            client_secret: clientSecret,
-            grant_type: 'authorization_code',
-            code: code,
-            redirect_uri: redirectURI,
-            scope: scopes.identify
-        }), {
-            headers: {
-                Authorization: `Basic ${Buffer.from(`${clientID}:${clientSecret}`).toString('base64')}`,
-            }
-        });
+        const discordResponse = await axios.post(discordOAuthToken,
+            new URLSearchParams ({
+                client_id: clientID,
+                client_secret: clientSecret,
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: redirectURI,
+                scope: `${scopes.identify} ${scopes.connections}`
+            }), {
+                headers: {
+                    Authorization: `Basic ${Buffer.from(`${clientID}:${clientSecret}`).toString('base64')}`,
+                }
+            });
         
         // need to move this next part into it's own function
         const { access_token } = discordResponse.data;
@@ -86,6 +88,11 @@ discordRouter.get(discordRedirect, async (req,res) => {
                 console.error('Error updating user settings:', error.stack);
                 res.redirect('/UserInformation');
         });
+
+        axios.get('https://discord.com/api/v9/users/@me/connections', authorizationHeader)
+            .then(response => {
+                console.log(response.data);
+            })
 
     }
     catch (err) {
