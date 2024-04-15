@@ -95,7 +95,7 @@ discordRouter.get(discordRedirect, async (req,res) => {
 });
 
 // Discord Route to display user information on web page
-discordRouter.get('/UserInformation', (req,res) => {
+discordRouter.get(discordUserInfo, (req,res) => {
     const { access_token } = req.session;
     const reqData = req.session;
     if(!access_token){
