@@ -1,15 +1,14 @@
-// REQUIRES
+// -------- REQUIRES --------
 const env = require('dotenv').config({ path:"./.ENV" });
 const session = require('express-session');
 const fs = require('fs');
 const https = require('https');
-const devDebug = require ('./public/js/dev-debug.js');
-// Path support
 const path = require('path');
-const { URLSearchParams } = require('url');
+const pug = require('pug');
 
 
-// EXPRESS SETUP
+// -------- EXPRESS SETUP --------
+// Import and options
 const express = require('express');
 const app = express();
 const options = {
@@ -17,28 +16,25 @@ const options = {
     cert: fs.readFileSync(env.parsed.CERT_PATH),
     passphrase: env.parsed.PASSPHRASE
 };
+
+// Create server and port vars
 const server = https.createServer(options, app);
 const port = 3000;
 
+// set application view engine, JSON Support, & Public Dir.
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
+const compiledFunc = pug.compileFile('./views/layout.pug');
+app.use(express.json());
+app.use(express.static('public'));
 
-//can use this to listen for events on the router
+// Server Listener
 server.listen(port, () => {
     console.log(`Server running on https://localhost:${port}`);
 })
 
-// view engine support - NEED TO MOVE OUT OF THIS JS
-const pug = require('pug');
-const compiledFunc = pug.compileFile('./views/layout.pug');
 
-// JSON Support
-app.use(express.json());
-
-// Expose Public file
-app.use(express.static('public'));
-
-//session support
+// -------- SESSION SETUP --------
 app.use(session({
     // CHANGE THIS TO A SECRET KEY
     secret: 'your_session_secret',
@@ -46,11 +42,13 @@ app.use(session({
     saveUninitialized: true
 }))
 
-// DISCORD SETUP
+
+// -------- DISCORD ROUTES --------
 const discordRouter = require('./routes/discord.js');
 app.use('/', discordRouter.discordRouter);
 
-// Default test get route
+
+// -------- TEST ROUTE --------
 app.get('/', (req, res) => {
     res.send(compiledFunc({
         path: 'Devin'
