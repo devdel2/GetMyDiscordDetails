@@ -33,7 +33,6 @@ server.listen(port, () => {
 const pug = require('pug');
 const compiledFunc = pug.compileFile('./views/layout.pug');
 
-
 // JSON Support
 app.use(express.json());
 
@@ -54,8 +53,6 @@ app.use(session({
 const clientSecret = env.parsed.CLIENT_SECRET;
 const clientID = env.parsed.CLIENT_ID;
 const redirectURI = env.parsed.REDIRECT_URI;
-
-console.log(redirectURI)
 
 app.get('/DiscordAuth', (req, res) => {
     const scopes = 'identify';
@@ -103,7 +100,7 @@ app.get('/ChangeDiscordStatus', async (req, res) => {
             })
             .catch(error => {
                 console.error('Error updating user settings:', error.stack);
-                res.redirect('/user-information');
+                res.redirect('/UserInformation');
         });
         
     }
@@ -113,7 +110,7 @@ app.get('/ChangeDiscordStatus', async (req, res) => {
     }
 });
 
-app.get('/user-information', (req,res) => {
+app.get('/UserInformation', (req,res) => {
     const { access_token } = req.session;
     const reqData = req.session;
     if(!access_token){
@@ -129,3 +126,6 @@ app.get('/', (req, res) => {
         path: 'Devin'
     }));
 });
+
+
+module.exports = app;
