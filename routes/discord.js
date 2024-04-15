@@ -1,18 +1,18 @@
  // REQUIRE STMNTS
-const env = require('dotenv').config(({ path:"./.ENV"}));
+const env = require('dotenv').config(({ path:"./.ENV"})).parsed;
 const axios = require('axios');
 const discordRouter = require('express').Router();
 
 // CLIENT SETUP
-const clientSecret = env.parsed.CLIENT_SECRET;
-const clientID = env.parsed.CLIENT_ID;
-const redirectURI = env.parsed.REDIRECT_URI;
+const clientSecret = env.CLIENT_SECRET;
+const clientID = env.CLIENT_ID;
+const redirectURI = env.REDIRECT_URI;
 
 // Discord Routes
-const discordAuthorize = env.parsed.DISCORD_AUTH_ROUTE
-const discordRedirect  = env.parsed.DISCORD_REDIRECT_ROUTE
-const discordUserInfo = env.parsed.DISCORD_USER_ROUTE
-const discordOAuthToken = env.parsed.DISCORD_OAUTH_TOKEN
+const discordAuthorize = env.DISCORD_AUTH_ROUTE
+const discordRedirect  = env.DISCORD_REDIRECT_ROUTE
+const discordUserInfo = env.DISCORD_USER_ROUTE
+const discordOAuthToken = env.DISCORD_OAUTH_TOKEN
 
 // Scopes sent to discord Auth server to determine access level
 const scopes = {
