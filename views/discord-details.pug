@@ -6,15 +6,17 @@ html(lang="en")
         div#discordDetails.grid-1-col
             div.card.open-sans-discord
                 h1 Discord Details
-                div#detailsContainerCol.grid-2-col
-                    div#detailsContainerRow.grid-2-row
-                        p#discordGlobal Gloabl Name: #{reqData.userData.global_name}
-                        p#discordUser Username: #{reqData.userData.username}
-                    //- img(src="./images/discord/discord-mark-white.png" class="icon-med")
-                div#connectionsContainerRow.grid-row
-                    i.fa-brands.fa-discord
-                    i.fa-brands.fa-spotify
-                    i.fa-brands.fa-twitch
-                    i.fa-brands.fa-steam
-                    i.fa-brands.fa-battle-net
-            
+                div#detailsContainerCol.grid-3-row
+                    p#discordGlobal Gloabl Name: #{userData.userData.global_name}
+                    p#discordUser Username: #{userData.userData.username}
+                div#connectionsContainerRow.grid-5-col
+                    i.fa-brands.fa-discord.tooltip.icon-centered
+                        .tooltiptext #{userData.userData.username}
+                    i.fa-brands.fa-spotify.tooltip.icon-centered
+                        .tooltiptext #{userData.userConnections[2].name}
+                    i.fa-brands.fa-twitch.tooltip.icon-centered
+                        .tooltiptext #{userData.userConnections[4].name}
+                    i.fa-brands.fa-steam.tooltip.icon-centered
+                        .tooltiptext #{userData.userConnections[3].name}
+                    i.fa-brands.fa-battle-net.tooltip.icon-centered
+                        .tooltiptext #{userData.userConnections[1].name}

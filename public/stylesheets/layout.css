@@ -25,21 +25,30 @@ body {
     grid-gap: .5rem;
 }
 
+.grid-3-row{
+    display:grid;
+    grid-template-rows: 1fr 1fr;
+    grid-gap: .5rem;
+}
+
+.grid-row{
+    display:grid;
+    grid-template-rows:1fr;
+    grid-gap: 0.5rem;
+}
+
+.grid-5-col{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 0.5rem;
+}
+
 .inline {
     display: block;
 }
 
-.icon-large {
-    max-width: 64px;
-    max-height: 64px;
-}
-
-.icon-med {
-    max-width: 32px;
-    max-height: 32px;
-}
-
-.icon-small {
-    max-width: 16px;
-    max-height: 16px;
+i.icon-centered{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

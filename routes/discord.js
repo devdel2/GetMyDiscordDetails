@@ -36,6 +36,7 @@ const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${cl
 
 // #region AXIOS DISCORD API REQUESTS
 
+    // Axios request to get user information from discord api
     const UserInfoRequest = (authHeader, req, res) => {
         axios.get('https://discord.com/api/v9/users/@me', authHeader)
             .then(response => {
@@ -43,15 +44,21 @@ const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${cl
                 res.redirect('/UserInformation');
             })
             .catch(error => {
-                console.error('Error updating user settings:', error.stack);
+                console.error('Error getting user information:', error.stack);
                 res.redirect('/UserInformation');
         });
     }
 
+    // Axios request to get user connections from discord api
     const UserConnectionsRequest = (authHeader, req, res) => {
         axios.get('https://discord.com/api/v9/users/@me/connections', authHeader)
         .then(response => {
-            console.log(response.data);
+            req.session.userConnections = response.data;
+            console.log(response.data[2].name);
+        })
+        .catch(error => {
+            console.error('Error getting user connections', error.stack);
+            res.redirect('/');
         })
     }
 
@@ -116,12 +123,12 @@ discordRouter.get(discordRedirect, async (req,res) => {
 // Discord Route to display user information on web page
 discordRouter.get(discordUserInfo, (req,res) => {
     const { access_token } = req.session;
-    const reqData = req.session;
+    const userData = req.session;
     if(!access_token){
         return res.status(400).send('Access token not found in session');
     }
     try{
-        res.render('discord-details', {reqData});
+        res.render('discord-details', {userData});
     }
     catch (err) {
         res.status(500).send("There was an error getting your user information.");
