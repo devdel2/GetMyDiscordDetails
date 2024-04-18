@@ -54,7 +54,6 @@ const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${cl
         axios.get('https://discord.com/api/v9/users/@me/connections', authHeader)
         .then(response => {
             req.session.userConnections = response.data;
-            console.log(response.data[2].name);
         })
         .catch(error => {
             console.error('Error getting user connections', error.stack);
