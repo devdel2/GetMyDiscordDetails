@@ -34,6 +34,29 @@ const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${cl
 
 //#endregion
 
+// #region AXIOS DISCORD API REQUESTS
+
+    const UserInfoRequest = (authHeader, req, res) => {
+        axios.get('https://discord.com/api/v9/users/@me', authHeader)
+            .then(response => {
+                req.session.userData = response.data;
+                res.redirect('/UserInformation');
+            })
+            .catch(error => {
+                console.error('Error updating user settings:', error.stack);
+                res.redirect('/UserInformation');
+        });
+    }
+
+    const UserConnectionsRequest = (authHeader, req, res) => {
+        axios.get('https://discord.com/api/v9/users/@me/connections', authHeader)
+        .then(response => {
+            console.log(response.data);
+        })
+    }
+
+// #endregion
+
 // #region DISCORD ROUTES
 
 // #Discord Authorization
@@ -79,20 +102,9 @@ discordRouter.get(discordRedirect, async (req,res) => {
         };
         
         // get request to the discord api for the identity scope object
-        axios.get('https://discord.com/api/v9/users/@me', authorizationHeader)
-            .then(response => {
-                req.session.userData = response.data;
-                res.redirect('/UserInformation');
-            })
-            .catch(error => {
-                console.error('Error updating user settings:', error.stack);
-                res.redirect('/UserInformation');
-        });
+        UserInfoRequest(authorizationHeader, req, res);
 
-        axios.get('https://discord.com/api/v9/users/@me/connections', authorizationHeader)
-            .then(response => {
-                console.log(response.data);
-            })
+        UserConnectionsRequest(authorizationHeader, req, res);
 
     }
     catch (err) {
