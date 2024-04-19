@@ -1,2 +1,4 @@
-# SneakOn
-UPDATE THIS: Test Description - Application to change online status in applications.
+# GetMyDiscordDetails
+Author: Devin DeLeon
+Date: 4/19/2024
+Descriptsion:
