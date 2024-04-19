@@ -30,7 +30,15 @@ const scopes = {
     identify: "identify",
     connections: "connections"
 };
+
 const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientID}&redirect_uri=${encodeURIComponent(redirectURI)}&response_type=code&scope=${encodeURIComponent(`${scopes.identify} ${scopes.connections}`)}`
+
+const authorizationHeader = {
+    headers: {
+        Authorization: '',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+}
 
 //#endregion
 
@@ -41,7 +49,7 @@ const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${cl
         axios.get('https://discord.com/api/v9/users/@me', authHeader)
             .then(response => {
                 req.session.userData = response.data;
-                res.redirect('/UserInformation');
+                res.redirect('/GetUserConnections')
             })
             .catch(error => {
                 console.error('Error getting user information:', error.stack);
@@ -54,10 +62,11 @@ const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${cl
         axios.get('https://discord.com/api/v9/users/@me/connections', authHeader)
         .then(response => {
             req.session.userConnections = response.data;
+            res.redirect('/UserInformation');
         })
         .catch(error => {
             console.error('Error getting user connections', error.stack);
-            res.redirect('/');
+            res.redirect('/UserInformation');
         })
     }
 
@@ -100,17 +109,18 @@ discordRouter.get(discordRedirect, async (req,res) => {
         const { access_token } = discordResponse.data;
         req.session.access_token = access_token.trim();
 
-        const authorizationHeader = {
-            headers: {
-                Authorization: `Bearer ${req.session.access_token}`,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        };
+        // const authorizationHeader = {
+        //     headers: {
+        //         Authorization: `Bearer ${req.session.access_token}`,
+        //         'Content-Type': 'application/x-www-form-urlencoded'
+        //     }
+        // };
+        authorizationHeader.headers.Authorization = `Bearer ${req.session.access_token}`;
         
         // get request to the discord api for the identity scope object
         UserInfoRequest(authorizationHeader, req, res);
 
-        UserConnectionsRequest(authorizationHeader, req, res);
+        //UserConnectionsRequest(authorizationHeader, req, res);
 
     }
     catch (err) {
@@ -134,6 +144,10 @@ discordRouter.get(discordUserInfo, (req,res) => {
         console.error(`The error occured at: ${err.stack}`)
     }
 });
+
+discordRouter.get('/GetUserConnections', (req, res) => {
+    UserConnectionsRequest(authorizationHeader, req, res);
+})
 
 // #endregion
 
