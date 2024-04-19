@@ -131,7 +131,7 @@ dist
 .pnp.*
 
 # local keys
-.pem
+*.pem
 
 # config files
 config/
